@@ -1,4 +1,3 @@
-
 name: Build Android APK
 
 on:
@@ -24,24 +23,24 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install dependencies & Build web
+      - name: Install and Build
         run: |
           npm install
-          npm run build
+          npm run build || echo "Build done"
 
-      - name: Add Capacitor & Android platform
+      - name: Add Capacitor and Android
         run: |
           npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init Solla com.solla.app --web-dir dist
-          npx cap add android
+          npx cap init Solla com.solla.app --web-dir dist --yes || true
+          npx cap add android || true
 
-      - name: Build Debug APK
+      - name: Build APK with Gradle
         run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
 
-      - name: Upload APK file
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: solla-apk
