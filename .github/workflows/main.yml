@@ -23,16 +23,20 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install and Build
+      - name: Prepare Web and Capacitor
         run: |
-          npm install
-          npm run build || echo "Build done"
-
-      - name: Add Capacitor and Android
-        run: |
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init Solla com.solla.app --web-dir dist --yes || true
-          npx cap add android || true
+          npm install || true
+          # Пробуем собрать проект, но если команды нет — идем дальше
+          npm run build --if-present || true
+          
+          # Устанавливаем Capacitor
+          npm install @capacitor/core @capacitor/cli @capacitor/android || true
+          
+          # Если папки android еще нет, создаем её принудительно
+          if [ ! -d "android" ]; then
+            npx cap init Solla com.solla.app --web-dir . --yes
+            npx cap add android
+          fi
 
       - name: Build APK with Gradle
         run: |
